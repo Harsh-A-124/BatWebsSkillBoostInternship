@@ -1,0 +1,28 @@
+<html>
+    <head>
+        <title>
+            Display Page
+        </title>
+    </head>
+    <body>
+        {% if messages %}
+            {% for message in messages %}
+            <div align="center" style="background-color: rgb(125, 255, 103);">
+                {{ message }}
+            </div>
+            {% endfor %}
+        {% endif %}
+        <h1>Members Database</h1>
+        {% for item in studs %}
+            Name: {{item.fullname}}<br/>
+            Age: {{item.age}}<br/>
+            Email: {{item.email}}<br/>
+            Contact No.: {{item.contactno}}<br/>
+            College: {{item.college}}<br/>
+            Branch: {{item.branch}}<br/>
+            SSC Marks: {{item.sscm}}<br/>
+            HSC Marks: {{item.hscm}}<br/>
+            <hr>
+        {% endfor %}
+    </body>
+</html>

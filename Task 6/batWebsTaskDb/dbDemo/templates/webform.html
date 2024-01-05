@@ -1,0 +1,50 @@
+<html>
+    <head>
+        <title>
+            Enrollment Form
+        </title>
+        <link rel="stylesheet" type="text/css" href="/static/css/webform.css">
+    </head>
+    <body>
+        <form method="POST" action="/webform" style="border:1px solid #ccc">
+            {% csrf_token %}
+            <div class="container">
+              <h1>Enrollment Form</h1>
+              <p>Please fill in this form to enroll yourself.</p>
+              <hr>
+
+              <label for="fullname"><b>Full Name</b></label>
+              <input type="text" placeholder="Enter Full Name" name="fullname" maxlength="30" required>
+
+              <label for="age"><b>Age</b></label>
+              <input type="number" placeholder="Enter Age" name="age" min="18" max="99" required>
+
+              <label for="contactno"><b>Contact No.</b></label>
+              <input type="number" placeholder="Enter Contact No." name="contactno" pattern="\d{10}" minlength="10" maxlength="10" required>
+
+              <label for="email"><b>Email</b></label>
+              <input type="email" placeholder="Enter Email" name="email" maxlength="200" required>
+
+              <label for="college"><b>College</b></label>
+              <input type="text" placeholder="Enter College" name="college" maxlength="30" required>
+
+              <label for="branch"><b>Branch</b></label>
+              <input type="text" placeholder="Enter Branch" name="branch" maxlength="30" required>
+
+              <label for="sscm"><b>SSC Marks</b></label>
+              <input type="number" placeholder="Enter SSC Marks" name="sscm" required>
+
+              <label for="hscm"><b>HSC Marks</b></label>
+              <input type="number" placeholder="Enter HSC Marks" name="hscm" required>
+          
+              <label for="passwd"><b>Password</b></label>
+              <input type="password" placeholder="Enter Password" name="passwd" minlength="6" maxlength="40" required>
+          
+              <div class="clearfix">
+                <button type="button" class="cancelbtn">Cancel</button>
+                <button type="submit" class="signupbtn">Enroll</button>
+              </div>
+            </div>
+          </form>
+    </body>
+</html>

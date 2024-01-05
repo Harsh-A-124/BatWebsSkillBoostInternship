@@ -1,0 +1,47 @@
+<html>
+    <head>
+        <title>
+            Updation Form
+        </title>
+        <link rel="stylesheet" type="text/css" href="/static/css/webform.css">
+    </head>
+    <body>
+        <form method="POST" action="{% url 'update' curr.id %}" style="border:1px solid #ccc">
+            {% csrf_token %}
+            <div class="container">
+              <h1>Updation Form</h1>
+              <p>Please fill in this form to update details.</p>
+              <hr>
+
+              <label for="fullname"><b>Full Name</b></label>
+              <input type="text" placeholder="Enter Full Name" name="fullname" maxlength="30" value="{{ curr.fullname }}" required>
+
+              <label for="age"><b>Age</b></label>
+              <input type="number" placeholder="Enter Age" name="age" min="18" max="99" value="{{ curr.age }}"required>
+
+              <label for="contactno"><b>Contact No.</b></label>
+              <input type="number" placeholder="Enter Contact No." name="contactno" pattern="\d{10}" minlength="10" maxlength="10" value="{{ curr.contactno }}" required>
+
+              <label for="email"><b>Email</b></label>
+              <input type="email" placeholder="Enter Email" name="email" maxlength="200" value="{{ curr.email }}" required>
+
+              <label for="college"><b>College</b></label>
+              <input type="text" placeholder="Enter College" name="college" maxlength="30" value="{{ curr.college }}" required>
+
+              <label for="branch"><b>Branch</b></label>
+              <input type="text" placeholder="Enter Branch" name="branch" maxlength="30" value="{{ curr.branch }}" required>
+
+              <label for="sscm"><b>SSC Marks</b></label>
+              <input type="number" placeholder="Enter SSC Marks" name="sscm" value="{{ curr.sscm }}" required>
+
+              <label for="hscm"><b>HSC Marks</b></label>
+              <input type="number" placeholder="Enter HSC Marks" name="hscm" value="{{ curr.hscm }}" required>
+          
+              <div class="clearfix">
+                <button type="button" class="cancelbtn"><a href="{% url 'record' curr.id %}" style="color: inherit; cursor: pointer; width: 100%; opacity: 0.9; display: block; height: 100%; text-decoration: none;">Go Back</a></button>
+                <button type="submit" class="signupbtn">Update</button>
+              </div>
+            </div>
+          </form>
+    </body>
+</html>

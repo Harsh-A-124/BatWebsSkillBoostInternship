@@ -1,0 +1,55 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="col-md-6 offset-md-3">
+    <html>
+        <head>
+            <title>
+                Record Page
+            </title>
+        </head>
+        <body>
+            <h1>Student Record</h1>
+            <div class="card">
+                <div class="card-header">
+                <strong>{{studs.fullname}}<br/></strong>
+                </div>
+                <div class="card-body">
+                <!-- <h5 class="card-title">Special title treatment</h5> -->
+                <p class="card-text">
+                    <strong>ID: </strong>{{studs.id}}<br/>
+                </p>
+                <p class="card-text">
+                    <strong>Email ID: </strong>{{studs.email}}<br/>
+                </p>
+                <p class="card-text">
+                    <strong>Age: </strong>{{studs.age}}<br/>
+                </p>
+                <p class="card-text">
+                    <strong>Contact No.: </strong>{{studs.contactno}}<br/>
+                </p>
+                <p class="card-text">
+                    <strong>College: </strong>{{studs.college}}<br/>
+                </p>
+                <p class="card-text">
+                    <strong>Branch: </strong>{{studs.branch}}<br/>
+                </p>
+                <p class="card-text">
+                    <strong>SSCM: </strong>{{studs.sscm}}<br/>
+                </p>
+                <p class="card-text">
+                    <strong>HSCM: </strong>{{studs.hscm}}<br/>
+                </p>
+                <p class="card-text">
+                    <strong>Created At: </strong>{{studs.created_at}}<br/>
+                </p>
+                <a href="{% url 'display' %}" class="btn btn-primary">Go Back</a>
+                <a href="{% url 'update' studs.id %}" class="btn btn-warning">Update</a>
+                <a href="{% url 'delete' studs.id %}" class="btn btn-danger">Delete</a>
+                </div>
+            </div>
+        </body>
+    </html>
+</div>
+{% endblock %}

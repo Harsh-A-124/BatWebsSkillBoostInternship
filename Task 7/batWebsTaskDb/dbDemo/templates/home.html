@@ -1,0 +1,16 @@
+<html>
+    <head>
+        <title>
+            Landing Page
+        </title>
+    </head>
+    <body>
+        <form method="GET" action="{% url 'login' %}">
+            {% csrf_token %}
+            <h1 align="center">Django Demo</h1>
+            <div align="center">
+                <button type="submit" height="100" width="400" style="background-color: green; color: white">Go To App</button>
+            </div>
+        </form>
+    </body>
+</html>
