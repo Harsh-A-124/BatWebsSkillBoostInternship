@@ -1,0 +1,303 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load my_tags %}
+
+{% block title %}
+    {{ post.title_tag }}
+{% endblock %}
+
+{% block content %}
+    <h1>{{ post.title }}</h1>
+    <small>
+        <strong>By:
+            <a href="{% url 'profile' post.author.userprofile.id %}" style="text-decoration: none; color:#212529;">
+                {% if post.author.userprofile.profile_pic %}
+                    <img src="{{ post.author.userprofile.profile_pic.url }}" height="20" width ="20" class="rounded-circle" alt="Profile Picture">
+                {% else %}
+                    <img src="{% static 'BlogDemo/images/default_profile_pic.jpg' %}" height="20" width ="20" class="rounded-circle" alt="Profile Picture">
+                {% endif %}
+                {{ post.author.first_name }} {{ post.author.last_name }}
+            </a>
+        </strong><br/>
+        <strong>In: <a href="{% url 'category' post.category|slugify %}" style="text-decoration: none; color:#212529;">{{ post.category.title }}</strong></a> <br/>
+        {{ post.date_time }}
+    </small><br/>
+    <hr>
+    <br/>
+    {% if post.header_image %}
+        <img src="{{ post.header_image.url }}" height="200" alt="Profile Picture">
+        <br/><br/>
+    {% endif %}
+    {{ post.body | safe }}
+
+    <br/><br/>
+    {% if user.is_authenticated %}
+            {% if user.id == post.author.id %}
+                <a href="{% url 'update-post' post.pk %}" class="btn btn-sm btn-warning"><i class="bi bi-pencil-fill"></i>&nbsp;Edit Post</a>&nbsp;&nbsp;
+                <a href="{% url 'delete-post' post.pk %}" class="btn btn-sm btn-danger"><i class="bi bi-trash-fill"></i>&nbsp;Delete Post</a>
+                <br/>
+            {% endif %}
+    {% endif %}
+    <hr>
+    
+    <form action="{% url 'like-post' post.pk %}" method="POST" style="display:inline">
+        {% csrf_token %}
+        
+        <!-- <a href="{% url 'home' %}" class="btn btn-sm btn-warning">
+            <i class="bi bi-caret-left-fill"></i>&nbsp;Back
+        </a> -->
+        {% if user.is_authenticated %}
+            {% if liked %}
+                <button type="submit" name="postid" value="{{ post.id }}" class="btn btn-sm btn-danger">
+                    <i class="bi bi-heart-fill text-white" style="font-size: 1.5rem;"></i>
+                </button>
+            {% else %}
+                <button type="submit" name="postid" value="{{ post.id }}" class="btn btn-sm text-danger" style="border: 1px solid dark; border-color:#DC3545">
+                    <i class="bi bi-heart text-danger" style="font-size: 1.5rem;"></i>
+                </button>
+            {% endif %}
+            <strong>&nbsp;{{ like_count }} Like(s)</strong>&nbsp;&nbsp;
+        {% else %}
+            <button type="submit" name="postid" value="{{ post.id }}" class="btn btn-sm text-danger" style="border: 1px solid dark; border-color:#DC3545" disabled>
+                <i class="bi bi-heart text-danger" style="font-size: 1.5rem;"></i>
+            </button> <strong>&nbsp;{{ like_count }} Like(s)</strong> - <a href="{% url 'login' %}" style="text-decoration: none;"><strong>Login</strong></a> to like this post &nbsp;&nbsp;
+        {% endif %}
+    </form>
+    <!-- <a href="#comment-header" class="btn btn-sm text-primary" style="border: 1px solid dark; border-color:#007BFF">
+        <i class="bi bi-chat text-primary" style="font-size: 1.5rem;"></i>
+    </a> -->
+    <a href="#comment-header" class="btn btn-sm btn-primary">
+        <i class="bi bi-chat-fill text-white" style="font-size: 1.5rem;"></i>
+    </a>
+    <strong>&nbsp;{{ post.comment_on.count }} Comment(s)</strong>&nbsp;&nbsp;
+    <a class="btn btn-sm btn-warning bg-warning" id="copy-link-button" data-bs-container="body" data-bs-toggle="popover" data-bs-trigger="focus" data-bs-placement="top" data-bs-content="Link Copied!" data-bs-animation="true">
+        <i class="bi bi-link text-white" style="font-size: 1.5rem;"></i>
+    </a>
+    <strong>&nbsp;Copy Link</strong>&nbsp;&nbsp;
+    <br/><br/><br/>
+    <h2>Author</h2>
+    <!-- <a href="{% url 'profile' post.author.userprofile.id %}" style="text-decoration: none; color:#212529;"> -->
+    <div class="card mb-3">
+        <div class="row g-0">
+            <div class="col-md-2">
+            {% if post.author.userprofile.profile_pic %}
+                <img src="{{ post.author.userprofile.profile_pic.url }}" height="160" width ="190" class="rounded-start" alt="Profile Picture">
+            {% else %}
+                <img src="{% static 'BlogDemo/images/default_profile_pic.jpg' %}" height="160" width ="190" class="rounded-start" alt="Profile Picture">
+            {% endif %}
+            </div>
+            <div class="col-md-10">
+                <div class="card-body h-145">
+                    <h4 class="card-title">{{ post.author.first_name }} {{ post.author.last_name }}</h4>
+                    <p class="card-text">
+                        <small class="text-body-secondary">
+                            <a href="{% url 'profile' post.author.userprofile.id %}" class="btn btn-sm btn-primary">Profile</a>
+                            {% if post.author.userprofile.website_url %}
+                                | <a href="{{ post.author.userprofile.website_url }}" class="btn btn-sm btn-warning">Website</a>
+                            {% endif %}
+                            {% if post.author.userprofile.social_media_url %}
+                                | <a href="{{ post.author.userprofile.social_media_url }}" class="btn btn-sm btn-danger">Social Media</a>
+                            {% endif %}
+                        </small>
+                    </p>
+                    <br/>
+                    <p class="card-text">{{ post.author.userprofile.bio }}</p>
+                    <!-- <p class="card-text"><small class="text-body-secondary">Last updated 3 mins ago</small></p> -->
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- </a> -->
+    <br/>
+    <hr>
+    <h2 id="comment-header" style="display: inline;">Comments</h2> &nbsp; <h3 style="font-weight: lighter;display: inline;">{{ post.comment_on.count }}</h3>
+    <br/>
+    <br/>
+    {% if user.is_authenticated %}
+        <!-- <a href="{% url 'add-comment' post.pk %}" class="btn btn-sm btn-primary">Add Comment</a> -->
+        <p class="d-inline-flex gap-1">
+            <button class="btn btn-sm btn-primary" id="add_comment_btn" type="button" data-bs-toggle="collapse" data-bs-target="#add_comment_collapse" onclick="loadAddComment()">
+                <i class="bi bi-plus-lg"></i>&nbsp;Add Comment
+            </button>
+        </p>
+        <div class="collapse" id="add_comment_collapse">
+            <div class="card card-body" id="add_comment_collapse_card">
+                <!--Placeholder-->
+            </div>
+        </div>
+    {% else %}
+        <a href="{% url 'login' %}" style="text-decoration: none;"><strong>Login</strong></a> to comment on this post &nbsp;&nbsp;
+    {% endif %}
+    <br/><br/>
+    {% if not post.comment_on.all %}
+        <h6>No comments yet...</h6>
+    {% else %}
+        {% for comment in post.comment_on.all %}
+            <strong>
+                <a href="{% url 'profile' comment.author.userprofile.id %}" style="text-decoration: none; color:#212529;">
+                    {% if comment.author.userprofile.profile_pic %}
+                        <img src="{{ comment.author.userprofile.profile_pic.url }}" style="vertical-align: -17%;" height="20" width ="20" class="rounded-circle" alt="Profile Picture">
+                    {% else %}
+                        <img src="{% static 'BlogDemo/images/default_profile_pic.jpg' %}" style="vertical-align: -17%;" height="20" width ="20" class="rounded-circle" alt="Profile Picture">
+                    {% endif %}
+                    {{ comment.author.first_name }} {{ comment.author.last_name }} - {{ comment.date_time_added }}
+                </a>
+            </strong><br/>
+            {{ comment.body }}
+            <br/>
+            <form method="POST" style="display: inline;">
+                {% csrf_token %}
+                
+                {% if user.is_authenticated %}
+                    {% comment_upvoted user.id comment as upvoted %}
+                    {% if upvoted %}
+                        <button type="submit" name="commentid" value="{{ comment.id }}" formaction="{% url 'upvote-comment' post.pk %}" class="btn btn-sm">
+                            <i class="bi bi-hand-thumbs-up-fill" style="font-size: 0.9rem;"></i>
+                        </button>
+                    {% else %}
+                        <button type="submit" name="commentid" value="{{ comment.id }}" formaction="{% url 'upvote-comment' post.pk %}" class="btn btn-sm">
+                            <i class="bi bi-hand-thumbs-up" style="font-size: 0.9rem;"></i>
+                        </button>
+                    {% endif %}
+                    {% comment_upvotes comment as upvotes %}
+                    <strong><small>{{ upvotes }}</small></strong>&nbsp;
+                    {% comment_downvoted user.id comment as downvoted %}
+                    {% if downvoted %}
+                        <button type="submit" name="commentid" value="{{ comment.id }}" formaction="{% url 'downvote-comment' post.pk %}" class="btn btn-sm">
+                            <i class="bi bi-hand-thumbs-down-fill" style="font-size: 0.9rem;"></i>
+                        </button>
+                    {% else %}
+                        <button type="submit" name="commentid" value="{{ comment.id }}" formaction="{% url 'downvote-comment' post.pk %}" class="btn btn-sm">
+                            <i class="bi bi-hand-thumbs-down" style="font-size: 0.9rem;"></i>
+                        </button>
+                    {% endif %}
+                    {% comment_downvotes comment as downvotes %}
+                    <strong><small>{{ downvotes }}</small></strong>&nbsp;&nbsp; <i class="bi bi-circle-fill" style="font-size: 0.25rem; vertical-align: 50%;"></i>&nbsp;&nbsp;
+                {% else %}
+                    <button type="submit" name="commentid" value="{{ comment.id }}" formaction="{% url 'upvote-comment' post.pk %}" class="btn btn-sm" style="border: 0px" disabled>
+                        <i class="bi bi-hand-thumbs-up" style="font-size: 0.9rem;"></i>
+                    </button>
+                    {% comment_upvotes comment as upvotes %}
+                    <strong><small>{{ upvotes }}</small></strong>&nbsp;
+                    <button type="submit" name="commentid" value="{{ comment.id }}" formaction="{% url 'downvote-comment' post.pk %}" class="btn btn-sm" style="border: 0px" disabled>
+                        <i class="bi bi-hand-thumbs-down" style="font-size: 0.9rem;"></i>
+                    </button>
+                    {% comment_downvotes comment as downvotes %}
+                    <strong><small>{{ downvotes }}</small></strong>&nbsp;&nbsp; <i class="bi bi-circle-fill" style="font-size: 0.25rem; vertical-align: 50%;"></i>&nbsp;&nbsp;
+                {% endif %}
+            </form>
+            {% if user.is_authenticated %}
+                <!-- <strong><small><a href="#" style="text-decoration: none;">Reply</a></small></strong> -->
+                <p class="d-inline-flex gap-1">
+                    <strong><small><a class="text-primary" style="text-decoration: none;" id="add_reply_btn{{ comment.id }}" data-bs-toggle="collapse" href="#add_reply_collapse{{ comment.id }}" role="button" onclick="loadAddReply(this.id,)">
+                        Reply
+                      </a></small></strong>
+                </p>
+                <div class="collapse" id="add_reply_collapse{{ comment.id }}">
+                    <div class="card card-body" id="add_reply_collapse_card{{ comment.id }}">
+                        <!--Placeholder-->
+                    </div>
+                </div>
+            {% else %}
+                <strong><small><p class="text-secondary" style="display: inline;">Reply</p></small></strong>
+            {% endif %}
+            <br/><br/>
+        {% endfor %}
+    {% endif %}
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const popoverTriggerList = document.querySelectorAll('[data-bs-toggle="popover"]');
+            const popoverList = [...popoverTriggerList].map(popoverTriggerEl => new bootstrap.Popover(popoverTriggerEl));
+
+            document.getElementById('copy-link-button').addEventListener('click', function() {
+                var tempInput = document.createElement('input');
+                tempInput.value = window.location.href;
+                document.body.appendChild(tempInput);
+                tempInput.select();
+                document.execCommand('copy');
+                document.body.removeChild(tempInput);
+
+                const copyLinkButton = document.getElementById('copy-link-button');
+                const popoverInstance = bootstrap.Popover.getInstance(copyLinkButton);
+                popoverInstance.show();
+
+                setTimeout(function(){
+                    popoverInstance.hide();
+                }, 2000);
+            });
+        });
+        var postpk = "{{ post.pk }}";
+        function loadAddComment() {
+            var add_comment_collapse_card = document.getElementById('add_comment_collapse_card');
+            var link = String('/postdetails/'+postpk+'/addcomment/');
+            // Fetch the content from the Django view
+            fetch(link)
+                .then(response => response.text())
+                .then(data => {
+                    // Replace the placeholder with the fetched content
+                    add_comment_collapse_card.innerHTML = data;
+                });
+        }
+        var add_comment_collapse = document.getElementById('add_comment_collapse');
+        var add_comment_btn = document.getElementById('add_comment_btn');
+        add_comment_collapse.addEventListener('show.bs.collapse', function () {
+            add_comment_btn.innerHTML = '<i class="bi bi-x-lg"></i>&nbsp;Close';
+            add_comment_btn.className="btn btn-sm btn-danger";
+        });
+
+        add_comment_collapse.addEventListener('hide.bs.collapse', function () {
+            add_comment_btn.innerHTML = '<i class="bi bi-plus-lg"></i>&nbsp;Add Comment';
+            add_comment_btn.className="btn btn-sm btn-primary";
+        });
+
+        function extractDigitsFromReplyId(id) {
+            var element_id_match = id.match(/\d+$/);
+            var element_id = element_id_match ? element_id_match[0]: null;
+            return element_id
+        }
+        function handleReplyCollapse(id) {
+            var collapseId = 'add_reply_collapse' + id;
+            var add_reply_collapse = document.getElementById(collapseId);
+            var add_reply_btn = document.getElementById(String('add_reply_btn'+id));
+
+            // if (add_reply_collapse && add_reply_btn) {
+                add_reply_collapse.addEventListener('show.bs.collapse', function () {
+                    add_reply_btn.innerHTML = 'Close';
+                    add_reply_btn.className="text-danger";
+                });
+
+                add_reply_collapse.addEventListener('hide.bs.collapse', function () {
+                    add_reply_btn.innerHTML = 'Reply';
+                    add_reply_btn.className="text-primary";
+                });
+            // }
+        }
+
+        function loadAddReply(id) {
+            var element_id = extractDigitsFromReplyId(id);
+            var add_comment_collapse_card = document.getElementById(String('add_comment_collapse_card'+element_id));
+            // var link = String('/postdetails/'+postpk+'/addreply/');
+            // // Fetch the content from the Django view
+            // fetch(link)
+            //     .then(response => response.text())
+            //     .then(data => {
+            //         // Replace the placeholder with the fetched content
+            //         add_reply_collapse.innerHTML = data;
+            //     });
+        }
+        
+        document.addEventListener('DOMContentLoaded', function () {
+            var replybuttonIds = [];
+            var reply_button_list = document.querySelectorAll('[role]');
+            for(let i=0;i<reply_button_list.length;i++){
+                if(reply_button_list[i].getAttribute('id')){
+                    replybuttonIds.push(reply_button_list[i].getAttribute('id'));
+                }
+            }
+            // Loop through the button IDs and set up event listeners
+            replybuttonIds.forEach(function (replybuttonId) {
+                handleReplyCollapse(extractDigitsFromReplyId(replybuttonId));
+            });
+        });
+    </script>
+{% endblock %}

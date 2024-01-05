@@ -1,0 +1,23 @@
+{% load static %}
+
+<h4>Add Comment</h4>
+<br/>
+<h6>Posting comment as:</h6><br/>
+<h5>
+    {% if user.userprofile.profile_pic %}
+        <img src="{{ user.userprofile.profile_pic.url }}" height="40" width ="40" class="rounded-circle" alt="Profile Picture">
+    {% else %}
+        <img src="{% static 'BlogDemo/images/default_profile_pic.jpg' %}" height="40" width ="40" class="rounded-circle" alt="Profile Picture">
+    {% endif %}
+    {{user.first_name}} {{user.last_name}}
+</h5>
+<br/>
+<div class="form-group">
+    <form action="{% url 'add-comment' postpk %}" method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        <!-- {{ form.media }} -->
+        {{ form.as_p }}
+        <br/>
+        <button type="submit" class="btn btn-primary"><i class="bi bi-check-circle-fill"></i>&nbsp;Post</button>
+    </form>
+</div>

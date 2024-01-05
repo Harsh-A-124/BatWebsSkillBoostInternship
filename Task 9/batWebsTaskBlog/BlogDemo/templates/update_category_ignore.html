@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    Update Category
+{% endblock %}
+
+{% block content %}
+    {% if user.is_authenticated %}
+        <h1>Update Category</h1>
+        <br/>
+        <div class="form-group">
+            <form method="POST">
+                {% csrf_token %}
+            
+                {{ form.as_p }}
+                <br/><br/>
+                <a href="{% url 'home' %}" class="btn btn-warning">
+                    <i class="bi bi-caret-left-fill"></i>&nbsp;Back
+                </a>&nbsp;&nbsp;
+                <button type="submit" class="btn btn-primary"><i class="bi bi-check-square-fill"></i>&nbsp;Update</button>
+            </form>
+        </div>
+    {% else %}
+        <h1>Access Denied</h1>
+    {% endif %}
+{% endblock %}

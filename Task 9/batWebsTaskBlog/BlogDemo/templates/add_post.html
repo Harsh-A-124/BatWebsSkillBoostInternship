@@ -1,0 +1,89 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    Add Post
+{% endblock %}
+
+{% block content %}
+    {% if user.is_authenticated %}
+        <h1>Add Post</h1>
+        <br/>
+        <div class="form-group">
+            <form method="POST" id='add_post_form' enctype="multipart/form-data">
+                {% csrf_token %}
+                {{ form.media }}
+                {{ form.as_p }}
+                <!-- <img id="image_preview" src=""  height="160"> -->
+                <br/><br/>
+                <a href="{% url 'home' %}" class="btn btn-warning">
+                    <i class="bi bi-caret-left-fill"></i>&nbsp;Back
+                </a>&nbsp;&nbsp;
+                <button type="submit" id="add_post_sub_btn" class="btn btn-primary"><i class="bi bi-check-circle-fill"></i>&nbsp;Post</button>
+            </form>
+        </div>
+        <script>
+            // var name = "{{ user.username }}";
+            author = document.getElementById("author");
+            // author.value = name;
+            for(var i=0;i<author.options.length;i++){
+                if(author.options[i].value == "{{ user.id }}"){
+                    author.options[i].setAttribute('selected','');
+                }
+                else{
+                    author.options[i].setAttribute('disabled','');
+                }
+            }
+            var sel_cat = document.getElementById("category");
+            sel_cat.add(new Option('Choose Category', ''), sel_cat[0]);
+            // document.getElementById("category").defaultValue = 'default';
+            // document.getElementById("category").innerHTML += "<option value='default' selected disabled> Choose Category </option>";
+            // var category = document.getElementById("category");
+            // category.options[0] = new Option('Choose Category', 'default');
+            category.options[0].setAttribute('disabled','');
+            category.options[0].setAttribute('selected','');
+            header_image_selector = document.getElementById('id_header_image');
+            header_image_selector.onchange = function () {
+                // var form = document.getElementById('add_post_form');
+                var img = document.getElementById('image_preview');
+                var br = document.getElementById('image_preview_br');
+                var label = document.getElementById('image_preview_label');
+                if(!img && !label && !br){
+                    img = document.createElement('img');
+                    img.setAttribute('id','image_preview');
+                    img.setAttribute('height','160');
+                    img.setAttribute('alt','Image Preview');
+                    // img.setAttribute('class','img-thumbnail');
+                    // sub_btn=document.getElementById('add_post_sub_btn');
+                    br = document.createElement('br');
+                    br.setAttribute('id','image_preview_br');
+                    label = document.createElement('label');
+                    label.setAttribute('id','image_preview_label');
+                    label.setAttribute('for','image_preview');
+                    label.innerHTML='<strong>Preview:</strong>&nbsp;&nbsp;';
+                    header_image_selector.insertAdjacentElement('afterend', br);
+                    br.insertAdjacentElement('afterend', label);
+                    label.insertAdjacentElement('afterend', img);
+                    // form.insertBefore(img,sub_btn.parentNode);
+                    // form.appendChild(img);
+                }
+                // var label_list = document.querySelectorAll('[for]');
+                // for(var i=0;i<label_list.length;i++){
+                //     if(label_list[i].getAttribute('for') == "id_header_image"){
+                //         label_list[i].setAttribute('style','display:inline;');
+                //     }
+                // }
+                if(this.files.length != 0){
+                    var src = URL.createObjectURL(this.files[0]);
+                    img.src = src;
+                }
+                else{
+                    img.parentNode.removeChild(img);
+                    label.parentNode.removeChild(label);
+                    br.parentNode.removeChild(br);
+                }
+            }
+        </script>
+    {% else %}
+        <h1><h1><a href="{% url 'login' %}" style="text-decoration: none;"><strong>Login</strong></a> To Add a Post</h1></h1>
+    {% endif %}
+{% endblock %}

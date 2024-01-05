@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    Add Comment
+{% endblock %}
+
+{% block content %}
+    {% if user.is_authenticated %}
+        <h1>Add Comment</h1>
+        <br/>
+        <div class="form-group">
+            <form method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
+                {{ form.media }}
+                {{ form.as_p }}
+                <br/><br/>
+                <a href="{% url 'home' %}" class="btn btn-warning">
+                    <i class="bi bi-caret-left-fill"></i>&nbsp;Back
+                </a>&nbsp;&nbsp;
+                <button type="submit" class="btn btn-primary"><i class="bi bi-check-circle-fill"></i>&nbsp;Post</button>
+            </form>
+        </div>
+        <!-- <script>
+            // var name = "{{ user.username }}";
+            author = document.getElementById("author");
+            // author.value = name;
+            for(var i=0;i<author.options.length;i++){
+                if(author.options[i].value == "{{ user.id }}"){
+                    author.options[i].setAttribute('selected','');
+                }
+                else{
+                    author.options[i].setAttribute('disabled','');
+                }
+            }
+        </script> -->
+    {% else %}
+        <h1><a href="{% url 'login' %}" style="text-decoration: none;"><strong>Login</strong></a> To Post A Comment</h1>
+    {% endif %}
+{% endblock %}

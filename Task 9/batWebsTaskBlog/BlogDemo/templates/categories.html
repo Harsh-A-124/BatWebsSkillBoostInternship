@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    Categories
+{% endblock %}
+
+{% block content %}
+<h1>Categories</h1>
+<br/>
+
+<ul>
+    {% for item in category_menu_list %}
+        <li>
+            <h5>
+                <a href="{% url 'category' item|slugify %}" style="text-decoration: none; color:#212529;">{{ item.name.title }}</a>
+            </h5>
+        </li>
+        <br/>
+    {% endfor %}
+    <li>
+        <h5>
+            <a href="{% url 'category' 'uncategorized' %}" style="text-decoration: none; color:#212529;">Uncategorized</a>
+        </h5>
+    </li>
+</ul>
+<a href="{% url 'home' %}" class="btn btn-warning">
+    <i class="bi bi-caret-left-fill"></i>&nbsp;Back
+</a>
+{% endblock %}

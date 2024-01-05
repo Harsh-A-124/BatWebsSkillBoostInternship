@@ -1,0 +1,226 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    Update Post
+{% endblock %}
+
+{% block content %}
+    {% if user.is_authenticated %}
+        {% if user.id == post.author.id %}
+            <h1>Update Post</h1>
+            <br/>
+            <div class="form-group">
+                <form id="update_post_form" method="POST" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    {{ form.media }}
+                    {{ form.as_p }}
+                    {% if post.header_image %}
+                        <br id="image_preview_br" />
+                        <label for="image_preview" id="image_preview_label"><strong>Current Image:</strong>&nbsp;&nbsp;</label>
+                        <img id="image_preview" src="{{ post.header_image.url }}" height="160" alt="Image Preview">
+                        <div class="mb-3 form-check">
+                            <input type="checkbox" class="form-check-input" name="header_image-clear" id="header_image-clear_id">
+                            <label class="form-check-label" for="header_image-clear_id">Remove Image</label>
+                        </div>
+                    {% else %}
+                        <div class="mb-3 form-check">
+                            <input type="checkbox" class="form-check-input" name="header_image-clear" id="header_image-clear_id" disabled>
+                            <label class="form-check-label" for="header_image-clear_id">Remove Image</label>
+                        </div>
+                    {% endif %}
+                    <br/><br/>
+                    <a href="{% url 'post-details' post.pk %}" class="btn btn-warning">
+                        <i class="bi bi-caret-left-fill"></i>&nbsp;Back
+                    </a>&nbsp;&nbsp;
+                    <button type="submit" class="btn btn-primary"><i class="bi bi-check-square-fill"></i>&nbsp;Update</button>
+                </form>
+            </div>
+            <script>
+                // var name = "{{ user.username }}";
+                author = document.getElementById("author");
+                // author.value = name;
+                for(var i=0;i<author.options.length;i++){
+                    if(author.options[i].value == "{{ user.id }}"){
+                        author.options[i].setAttribute('selected','');
+                    }
+                    else{
+                        author.options[i].setAttribute('disabled','');
+                    }
+                }
+                var sel_cat = document.getElementById("category");
+                sel_cat.add(new Option('Choose Category', ''), sel_cat[0]);
+                // document.getElementById("category").defaultValue = 'default';
+                // document.getElementById("category").innerHTML += "<option value='default' selected disabled> Choose Category </option>";
+                // var category = document.getElementById("category");
+                // category.options[0] = new Option('Choose Category', 'default');
+                category.options[0].setAttribute('disabled','');
+                var post_category = "{{ post.category }}";
+                if (post_category == 'uncategorized'){
+                    category.options[0].setAttribute('selected','');
+                }
+                var og_post_header_image = `{% if post.header_image %}
+                    {{post.header_image.url}}
+                {% endif %}`
+                var header_image_selector = document.getElementById('id_header_image');
+                header_image_selector.onchange = function () {
+                    // var form = document.getElementById('update_post_form');
+                    var img = document.getElementById('image_preview');
+                    var br = document.getElementById('image_preview_br');
+                    var label = document.getElementById('image_preview_label');
+                    // rem_flag = false;
+                    if(!img && !label && !br){
+                        img = document.createElement('img');
+                        img.setAttribute('id','image_preview');
+                        img.setAttribute('height','160');
+                        img.setAttribute('alt','Image Preview');
+                        // img.setAttribute('class','img-thumbnail');
+                        // sub_btn=document.getElementById('add_post_sub_btn');
+                        br = document.createElement('br');
+                        br.setAttribute('id','image_preview_br');
+                        label = document.createElement('label');
+                        label.setAttribute('id','image_preview_label');
+                        label.setAttribute('for','image_preview');
+                        header_image_selector.insertAdjacentElement('afterend', br);
+                        br.insertAdjacentElement('afterend', label);
+                        label.insertAdjacentElement('afterend', img);
+                        // form.insertBefore(img,sub_btn.parentNode);
+                        // form.appendChild(img);
+                    }
+                    // var label_list = document.querySelectorAll('[for]');
+                    // for(var i=0;i<label_list.length;i++){
+                    //     if(label_list[i].getAttribute('for') == "id_header_image"){
+                    //         label_list[i].setAttribute('style','display:inline;');
+                    //     }
+                    // }
+                    if(this.files.length != 0){
+                        label.innerHTML='<strong>Preview:</strong>&nbsp;&nbsp;';
+                        document.getElementById('header_image-clear_id').removeAttribute('disabled');
+                        var src = URL.createObjectURL(this.files[0]);
+                        img.src = src;
+                        if(header_image_remover.checked){
+                            header_image_remover.checked = false;
+                        }
+                    }
+                    else if(this.files.length == 0 && og_post_header_image){
+                        img.src = og_post_header_image;
+                        if(header_image_remover.checked){
+                            header_image_remover.checked = false;
+                        }
+                    }
+                    else if(this.files.length == 0 && !og_post_header_image){
+                        img.parentNode.removeChild(img);
+                        label.parentNode.removeChild(label);
+                        br.parentNode.removeChild(br);
+                        if(header_image_remover.checked==false){
+                            header_image_remover.checked = true;
+                        }
+                    }                    
+                }
+                var header_image_remover = document.getElementById('header_image-clear_id');
+                if (og_post_header_image){
+                    // header_image_remover.parentNode.removeChild(header_image_remover.nextElementSibling);
+                    var label_list = document.querySelectorAll('[for]');
+                    for(var i=0;i<label_list.length;i++){
+                        if(label_list[i].getAttribute('for') == "id_header_image"){
+                            for(let j=0;j<4;j++){
+                                label_list[i].nextElementSibling.remove();
+                            }
+                            // let temp = label_list[i].nextSibling;
+                            // temp.nextSibling.parentNode.removeChild(temp.nextSibling);
+                            // temp.nextSibling.remove();
+                            label_list[i].nextSibling.remove();
+                            document.addEventListener('DOMContentLoaded', function () {
+                            // The final battle begins - annihilate "Change:" from the entire document
+                            const regex = new RegExp("Change:", "g");
+                            function obliterateText(node) {
+                                if (node.nodeType === Node.TEXT_NODE) {
+                                    node.nodeValue = node.nodeValue.replace(regex, '');
+                                } else {
+                                    for (const childNode of node.childNodes) {
+                                        obliterateText(childNode);
+                                    }
+                                }
+                            }
+                            obliterateText(document.body);
+                        });
+                        }
+                    }
+                }
+                header_image_remover = document.getElementById('header_image-clear_id');
+                // var img_src;
+                // var rem_flag=true;
+                // var header_image_list;
+                header_image_remover.onchange = function () {
+                    var img = document.getElementById('image_preview');
+                    var br = document.getElementById('image_preview_br');
+                    var label = document.getElementById('image_preview_label');
+                    
+                    if(this.checked){
+                        if(img && label && br){
+                            // img_src = img.src;
+                            // header_image_list = header_image_selector.value;
+                            img.parentNode.removeChild(img);
+                            label.parentNode.removeChild(label);
+                            br.parentNode.removeChild(br);
+                            header_image_selector.value = "";
+                            if(!og_post_header_image){
+                                this.checked=false;
+                                this.setAttribute('disabled','');
+                            }
+                        }
+                    }
+                    else{
+                        // if(!img && !label && !br && img_src){
+                        //     img = document.createElement('img');
+                        //     img.setAttribute('id','image_preview');
+                        //     img.setAttribute('height','160');
+                        //     img.setAttribute('alt','Image Preview');
+                        //     // img.setAttribute('class','img-thumbnail');
+                        //     // sub_btn=document.getElementById('add_post_sub_btn');
+                        //     br = document.createElement('br');
+                        //     br.setAttribute('id','image_preview_br');
+                        //     label = document.createElement('label');
+                        //     label.setAttribute('id','image_preview_label');
+                        //     label.setAttribute('for','image_preview');
+                        //     header_image_selector.insertAdjacentElement('afterend', br);
+                        //     br.insertAdjacentElement('afterend', label);
+                        //     label.insertAdjacentElement('afterend', img);
+                        //     // form.insertBefore(img,sub_btn.parentNode);
+                        //     // form.appendChild(img);
+                        //     label.innerHTML='<strong>Preview:</strong>&nbsp;&nbsp;';
+                        //     img.src = img_src;
+                        // }
+                        if(!img && !label && !br && og_post_header_image){
+                            // if(header_image_selector.files.length != 0){
+                                img = document.createElement('img');
+                                img.setAttribute('id','image_preview');
+                                img.setAttribute('height','160');
+                                img.setAttribute('alt','Image Preview');
+                                // img.setAttribute('class','img-thumbnail');
+                                // sub_btn=document.getElementById('add_post_sub_btn');
+                                br = document.createElement('br');
+                                br.setAttribute('id','image_preview_br');
+                                label = document.createElement('label');
+                                label.setAttribute('id','image_preview_label');
+                                label.setAttribute('for','image_preview');
+                                header_image_selector.insertAdjacentElement('afterend', br);
+                                br.insertAdjacentElement('afterend', label);
+                                label.insertAdjacentElement('afterend', img);
+                                // form.insertBefore(img,sub_btn.parentNode);
+                                // form.appendChild(img);
+                                label.innerHTML='<strong>Preview:</strong>&nbsp;&nbsp;';
+                                // img.src = img_src;
+                                img.src = og_post_header_image;
+                                // header_image_selector.value = header_image_list;
+                            // }
+                        }
+                    }
+                }
+            </script>
+        {% else %}
+            <h1>User Access Denied</h1>
+        {% endif %}
+    {% else %}
+        <h1>Access Denied</h1>
+    {% endif %}
+{% endblock %}
