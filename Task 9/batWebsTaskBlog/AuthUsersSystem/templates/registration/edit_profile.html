@@ -1,0 +1,160 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}
+    Edit Profile
+{% endblock %}
+
+{% block content %}
+    {% if user.is_authenticated %}
+        {% if user.id == userprofile.user.id %}
+            <h1>Edit Profile</h1>
+            <br/>
+            <div class="form-group">
+                <form id="edit_profile_form" method="POST" enctype="multipart/form-data">
+                    {% csrf_token %}
+
+                    {% if user.userprofile.profile_pic %}
+                        <div class="container" align="center">
+                            <br id="profile_preview_br" />
+                            <label for="profile_preview" id="profile_preview_label"><strong>Current Profile Pic:</strong>&nbsp;&nbsp;</label><br/>
+                            <img id="profile_preview" src="{{ user.userprofile.profile_pic.url }}" height="160" width ="190" class="rounded-start" alt="Profile Picture Preview">&nbsp;&nbsp;
+                            <img id="profile_preview_rounded" src="{{ user.userprofile.profile_pic.url }}" height="160" width ="190" class="rounded-circle" alt="Profile Picture Preview">
+                            <br/><br/>
+                            <div class="mb-3 form-check-inline">
+                                <input type="checkbox" class="form-check-input" name="profile_pic-clear" id="profile_pic-clear_id">
+                                <label class="form-check-label" for="profile_pic-clear_id">Remove Profile Picture</label>
+                            </div>
+                        </div>
+                        
+                    {% else %}
+                        <div class="container" align="center">
+                            <br id="profile_preview_br" />
+                            <label for="profile_preview" id="profile_preview_label"><strong>Current Profile Pic:</strong>&nbsp;&nbsp;</label><br/>
+                            <img id="profile_preview" src="{% static 'BlogDemo/images/default_profile_pic.jpg' %}" height="160" width ="190" class="rounded-start" alt="Profile Picture Preview">
+                            <img id="profile_preview_rounded" src="{% static 'BlogDemo/images/default_profile_pic.jpg' %}" height="160" width ="190" class="rounded-circle" alt="Profile Picture Preview">
+                            <br/><br/>
+                            <div class="mb-3 form-check-inline">
+                                <input type="checkbox" class="form-check-input" name="profile_pic-clear" id="profile_pic-clear_id" disabled>
+                                <label class="form-check-label" for="profile_pic-clear_id">Remove Profile Picture</label>
+                            </div>
+                        </div>
+                    {% endif %}
+                    <br/>
+                    {{ form.as_p }}
+                    <br/><br/>
+                    <a href="{% url 'home' %}" class="btn btn-warning">
+                        <i class="bi bi-caret-left-fill"></i>&nbsp;Back
+                    </a>&nbsp;&nbsp;
+                    <button type="submit" class="btn btn-primary"><i class="bi bi-check-square-fill"></i>&nbsp;Update</button>
+                </form>
+            </div>
+
+            <script>
+                var og_user_profile_pic = `{% if user.userprofile.profile_pic %}
+                    {{user.userprofile.profile_pic.url}}
+                {% endif %}`
+                var profile_pic_selector = document.getElementById('id_profile_pic');
+                var profile_pic_remover = document.getElementById('profile_pic-clear_id');
+                profile_pic_selector.onchange = function () {
+                    // var form = document.getElementById('edit_profile_form');
+                    var pp = document.getElementById('profile_preview');
+                    var pp_round = document.getElementById('profile_preview_rounded');
+                    // var br = document.getElementById('profile_preview_br');
+                    var label = document.getElementById('profile_preview_label');
+                    // var label_list = document.querySelectorAll('[for]');
+                    // for(var i=0;i<label_list.length;i++){
+                    //     if(label_list[i].getAttribute('for') == "id_profile_pic"){
+                    //         label_list[i].setAttribute('style','display:inline;');
+                    //     }
+                    // }
+                    if(this.files.length != 0){
+                        document.getElementById('profile_pic-clear_id').removeAttribute('disabled');
+                        label.innerHTML='<strong>Preview:</strong>&nbsp;&nbsp;';
+                        var src = URL.createObjectURL(this.files[0]);
+                        pp.src = src;
+                        pp_round.src = src;
+                        if(profile_pic_remover.checked){
+                            profile_pic_remover.checked = false;
+                        }
+                    }
+                    else if(this.files.length == 0 && og_user_profile_pic){
+                        pp.src = og_user_profile_pic;
+                        pp_round.src = og_user_profile_pic;
+                        if(profile_pic_remover.checked){
+                            profile_pic_remover.checked = false;
+                        }
+                    }
+                    else if(this.files.length == 0 && !og_user_profile_pic){
+                        pp.src = "/static/BlogDemo/images/default_profile_pic.jpg";
+                        pp_round.src = "/static/BlogDemo/images/default_profile_pic.jpg"; 
+                        if(profile_pic_remover.checked==false){
+                            profile_pic_remover.checked = true;
+                        }
+                    }
+                }
+
+                if (og_user_profile_pic){
+                    // header_image_remover.parentNode.removeChild(header_image_remover.nextElementSibling);
+                    var label_list = document.querySelectorAll('[for]');
+                    for(var i=0;i<label_list.length;i++){
+                        if(label_list[i].getAttribute('for') == "id_profile_pic"){
+                            for(let j=0;j<4;j++){
+                                label_list[i].nextElementSibling.remove();
+                            }
+                            // let temp = label_list[i].nextSibling;
+                            // temp.nextSibling.parentNode.removeChild(temp.nextSibling);
+                            // temp.nextSibling.remove();
+                            label_list[i].nextSibling.remove();
+                            document.addEventListener('DOMContentLoaded', function () {
+                            // The final battle begins - annihilate "Change:" from the entire document
+                            const regex = new RegExp("Change:", "g");
+                            function obliterateText(node) {
+                                if (node.nodeType === Node.TEXT_NODE) {
+                                    node.nodeValue = node.nodeValue.replace(regex, '');
+                                } else {
+                                    for (const childNode of node.childNodes) {
+                                        obliterateText(childNode);
+                                    }
+                                }
+                            }
+                            obliterateText(document.body);
+                        });
+                        }
+                    }
+                }
+
+                profile_pic_remover.onchange = function () {
+                    var pp = document.getElementById('profile_preview');
+                    var pp_round = document.getElementById('profile_preview_rounded');
+                    var label = document.getElementById('profile_preview_label');
+                    
+                    if(this.checked){
+                        pp.src = "/static/BlogDemo/images/default_profile_pic.jpg";
+                        pp_round.src = "/static/BlogDemo/images/default_profile_pic.jpg";
+                        profile_pic_selector.value = "";
+                        if(!og_user_profile_pic){
+                            this.checked=false;
+                            this.setAttribute('disabled','');
+                        }
+                    }
+                    else{
+                        if(og_user_profile_pic){
+                            label.innerHTML='<strong>Preview:</strong>&nbsp;&nbsp;';
+                            pp.src = og_user_profile_pic;
+                            pp_round.src = og_user_profile_pic;
+                        }
+                        else{
+                            pp.src = "/static/BlogDemo/images/default_profile_pic.jpg";
+                            pp_round.src = "/static/BlogDemo/images/default_profile_pic.jpg";
+                        }
+                    }
+                }
+            </script>
+        {% else %}
+            <h1>User Access Denied</h1>
+        {% endif %}
+    {% else %}
+        <h1>Access Denied</h1>
+    {% endif %}
+{% endblock %}

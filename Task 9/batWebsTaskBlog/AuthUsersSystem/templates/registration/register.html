@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    Register
+{% endblock %}
+
+{% block content %}
+<h1>Register</h1>
+<br/>
+<div class="form-group">
+    <form method="POST">
+        {% csrf_token %}
+    
+        {{ form.as_p }}
+        <br/>
+        <div class="form-text">Already Registered? <a href="{% url 'login' %}" style="text-decoration: none;"><strong>Login Here</strong></a></div>
+        <br/><br/>
+        <a href="{% url 'home' %}" class="btn btn-warning">
+            <i class="bi bi-caret-left-fill"></i>&nbsp;Back
+        </a>&nbsp;&nbsp;
+        <button type="submit" class="btn btn-primary"><i class="bi bi-check-circle-fill"></i>&nbsp;Register</button>
+    </form>
+</div>
+
+{% endblock %}

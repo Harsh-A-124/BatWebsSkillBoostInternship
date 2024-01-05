@@ -1,0 +1,63 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}
+    Create Profile
+{% endblock %}
+
+{% block content %}
+    {% if user.is_authenticated %}
+        {% if not user.userprofile.id %}
+            <h1>Create Profile</h1>
+            <br/>
+            <div class="form-group">
+                <form method="POST" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <div class="container" align="center">
+                        <br id="profile_preview_br" />
+                        <label for="profile_preview" id="profile_preview_label"><strong>Preview:</strong>&nbsp;&nbsp;</label><br/>
+                        <img id="profile_preview" src="{% static 'BlogDemo/images/default_profile_pic.jpg' %}" height="160" width ="190" class="rounded-start" alt="Profile Picture Preview">
+                        <img id="profile_preview_rounded" src="{% static 'BlogDemo/images/default_profile_pic.jpg' %}" height="160" width ="190" class="rounded-circle" alt="Profile Picture Preview">
+                    </div>
+                    <br/>
+                    {{ form.as_p }}
+                    <br/><br/>
+                    <a href="{% url 'home' %}" class="btn btn-warning">
+                        <i class="bi bi-caret-left-fill"></i>&nbsp;Back
+                    </a>&nbsp;&nbsp;
+                    <button type="submit" class="btn btn-primary"><i class="bi bi-check-circle-fill"></i>&nbsp;Create</button>
+                </form>
+            </div>
+            <script>
+                profile_pic_selector = document.getElementById('id_profile_pic');
+                profile_pic_selector.onchange = function () {
+                    // var form = document.getElementById('edit_profile_form');
+                    var pp = document.getElementById('profile_preview');
+                    var pp_round = document.getElementById('profile_preview_rounded');
+                    // var br = document.getElementById('profile_preview_br');
+                    var label = document.getElementById('profile_preview_label');
+                    // var label_list = document.querySelectorAll('[for]');
+                    // for(var i=0;i<label_list.length;i++){
+                    //     if(label_list[i].getAttribute('for') == "id_profile_pic"){
+                    //         label_list[i].setAttribute('style','display:inline;');
+                    //     }
+                    // }
+                    if(this.files.length != 0){
+                        label.innerHTML='<strong>Preview:</strong>&nbsp;&nbsp;';
+                        var src = URL.createObjectURL(this.files[0]);
+                        pp.src = src;
+                        pp_round.src = src;
+                    }
+                    else{
+                        pp.src = "/static/BlogDemo/images/default_profile_pic.jpg";
+                        pp_round.src = "/static/BlogDemo/images/default_profile_pic.jpg";
+                    }
+                }
+            </script>
+        {% else %}
+            <h1>Profile Already Created</h1>
+        {% endif %}
+    {% else %}
+        <h1><a href="{% url 'login' %}" style="text-decoration: none;"><strong>Login</strong></a> To Create A Profile</h1>
+    {% endif %}
+{% endblock %}
