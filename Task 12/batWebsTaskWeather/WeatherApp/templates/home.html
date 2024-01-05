@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+{% block content %}
+<h1> OpenWeather API Demo
+<br/><br/>
+
+    <form method="post" class="col-md"">
+      {% csrf_token %}
+      <div class=" input-group">
+      <input type="text" class="form-control" style="height:46%;" name="city" placeholder="Choose Your City ...">
+      <div class="input-group-btn">
+        <button type="submit" class="btn btn-primary" style="vertical-align:57%;">Search</button>
+      </div>
+      </div>
+      <form>
+  <br/>
+  <div class="row">
+    {% if country_code and coordinate and temp and pressure and humidity %}
+    <div class="col d-flex justify-content-center">
+      <div class=" card text-white bg-dark mb-6">
+      <div class=" card-body">
+        <h4><span class="badge badge-primary">Country Code :</span> {{country_code}}</h4>
+        <h4><span class="badge badge-primary">Coordinates [X,Y] :</span> {{coordinate}}</h4>
+        <h4><span class="badge badge-primary">Temperature in Celsius :</span> {{temp}}</h4>
+        <h4><span class="badge badge-primary">Pressure :</span> {{pressure}} </h4>
+        <h4><span class="badge badge-primary">Humidity : </span> {{humidity}}</h4>
+        <h4><span class="badge badge-primary">Forecast : </span> {{main}} <img
+            src="http://openweathermap.org/img/w/{{icon}}.png" alt="Image" style="width:70px"></h4>
+        <h4><span class="badge badge-primary">Description : </span> {{description}}</h4>
+      </div>
+      {% endif %}
+    </div>
+{% endblock %}

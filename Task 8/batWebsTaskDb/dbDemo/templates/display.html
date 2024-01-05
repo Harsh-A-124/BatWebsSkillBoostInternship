@@ -1,0 +1,64 @@
+{% extends 'base.html' %}
+{% block content %}
+<html>
+    <head>
+        <title>
+            Display Page
+        </title>
+    </head>
+    <body>
+        <!-- {% if user.is_authenticated %} -->
+            <!-- {% if messages %}
+                {% for message in messages %}
+                <div align="center" style="background-color: rgb(125, 255, 103);">
+                    {{ message }}
+                </div>
+                {% endfor %}
+            {% endif %} -->
+            <h1>Students' Database</h1>
+            <table class="table table-striped table-hover table-bordered">
+                <thead class="table-dark">
+                  <tr>
+                    <th scope="col">Name</th>
+                    <th scope="col">Age</th>
+                    <th scope="col">Email</th>
+                    <th scope="col">Contact No.</th>
+                    <th scope="col">College</th>
+                    <th scope="col">Branch</th>
+                    <th scope="col">HSC Marks</th>
+                    <th scope="col">SSC Marks</th>
+                    <th scope="col">Created At</th>
+                    <th scope="col">ID</th>
+                  </tr>
+                </thead>
+                <tbody>
+                    {% if studs %}
+                        {% for item in studs %}
+                            <tr>
+                                <td><a href="{% url 'record' item.id %}">{{item.fullname}}<br/></a></td>
+                                <td><a href="{% url 'record' item.id %}">{{item.age}}<br/></a></td>
+                                <td><a href="{% url 'record' item.id %}">{{item.email}}<br/></a></td>
+                                <td><a href="{% url 'record' item.id %}">{{item.contactno}}<br/></a></td>
+                                <td><a href="{% url 'record' item.id %}">{{item.college}}<br/></a></td>
+                                <td><a href="{% url 'record' item.id %}">{{item.branch}}<br/></a></td>
+                                <td><a href="{% url 'record' item.id %}">{{item.sscm}}<br/></a></td>
+                                <td><a href="{% url 'record' item.id %}">{{item.hscm}}<br/></a></td>
+                                <td><a href="{% url 'record' item.id %}">{{item.created_at}}<br/></a></td>
+                                <td><a href="{% url 'record' item.id %}">{{item.id}}<br/></a></td>
+                            </tr>
+                        {% endfor %}
+                    {% endif %}
+                </tbody>
+            </table>
+        <!-- {% else %}
+                <h1>You're Not Logged In! Login First!</h1>
+                <form method="GET" action="{% url 'login' %}">
+                    {% csrf_token %}
+                    <div align="center">
+                        <button type="submit" height="100" width="400" style="background-color: green; color: white">Login</button>
+                    </div>
+                </form>
+        {% endif %} -->
+    </body>
+</html>
+{% endblock %}

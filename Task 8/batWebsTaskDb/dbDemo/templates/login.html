@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="col-md-6 offset-md-3">
+    <html>
+        <head>
+            <title>
+                Login Page
+            </title>
+        </head>
+        <body>
+            {% if user.is_authenticated %}
+                <h1>You're Logged In Already! Go to the Display Page!</h1>
+                <form method="GET" action="{% url 'display' %}">
+                    {% csrf_token %}
+                    <div align="center">
+                        <button type="submit" height="100" width="400" style="background-color: green; color: white">Display Page</button>
+                    </div>
+                </form>
+            {% else %}
+                <h1>LOGIN</h1>
+                <form method="POST" action="{% url 'login' %}">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                    <label for="username" class="form-label">Username</label>
+                    <input type="text" class="form-control" name="username" placeholder="Enter Username" required>
+                    </div>
+                    <div class="mb-3">
+                    <label for="password" class="form-label">Password</label>
+                    <input type="password" class="form-control" name="password" placeholder="Enter Password" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Login</button>
+                </form>
+            {% endif %}
+        </body>
+    </html>
+</div>
+{% endblock %}
