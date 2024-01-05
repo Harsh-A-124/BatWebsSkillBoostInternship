@@ -9,7 +9,7 @@ import textwrap
 def home(request):
     return render(request,'home.html',{})
 
-GOOGLE_API_KEY="AIzaSyAuo8rIBFAqvuqdpFXrYDeFou80WlFlCxo"
+GOOGLE_API_KEY=""
 
 genai.configure(api_key=GOOGLE_API_KEY)
 model = genai.GenerativeModel('gemini-pro')
